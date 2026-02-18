@@ -1,3 +1,10 @@
+# IDE
+.idea/
+
+# Build output
+dist/
+storybook-static/
+
 # Logs
 logs
 *.log

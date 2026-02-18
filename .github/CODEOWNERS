@@ -1,0 +1,6 @@
+# Default owners for the entire repository
+* @NCIOCPL/cgov-digital-platform
+
+# Component-specific ownership
+/src/components/core/ @NCIOCPL/cgov-digital-platform
+/src/components/ncids/ @NCIOCPL/cgov-digital-platform

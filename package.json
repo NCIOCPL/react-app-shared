@@ -1,120 +1,121 @@
 {
-  "name": "@nciocpl/react-components",
-  "version": "0.1.0",
-  "description": "Shared React component library for NCI applications",
-  "type": "module",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
-  "types": "dist/types/index.d.ts",
-  "sideEffects": [
-    "**/*.css",
-    "**/*.scss"
-  ],
-  "exports": {
-    ".": {
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/types/index.d.ts"
-    },
-    "./core": {
-      "import": "./dist/esm/components/core/index.js",
-      "require": "./dist/cjs/components/core/index.js",
-      "types": "./dist/types/components/core/index.d.ts"
-    },
-    "./ncids": {
-      "import": "./dist/esm/components/ncids/index.js",
-      "require": "./dist/cjs/components/ncids/index.js",
-      "types": "./dist/types/components/ncids/index.d.ts"
-    },
-    "./styles": "./dist/styles/index.css"
-  },
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "build": "rollup -c",
-    "dev": "storybook dev -p 6006",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "lint": "eslint 'src/**/*.{ts,tsx}'",
-    "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix",
-    "format": "prettier --write 'src/**/*.{ts,tsx,scss,css,md}'",
-    "format:check": "prettier --check 'src/**/*.{ts,tsx,scss,css,md}'",
-    "storybook:build": "storybook build",
-    "typecheck": "tsc --noEmit",
-    "prepare": "husky",
-    "prepublishOnly": "pnpm build"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/NCIOCPL/react-app-shared.git"
-  },
-  "keywords": [
-    "react",
-    "components",
-    "nci",
-    "ncids",
-    "design-system"
-  ],
-  "author": "NCI OCPL",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/NCIOCPL/react-app-shared/issues"
-  },
-  "homepage": "https://github.com/NCIOCPL/react-app-shared#readme",
-  "peerDependencies": {
-    "react": ">=16.14.0",
-    "react-dom": ">=16.14.0"
-  },
-  "peerDependenciesMeta": {
-    "@nciocpl/ncids-css": {
-      "optional": true
-    }
-  },
-  "devDependencies": {
-    "@changesets/cli": "^2.27.0",
-    "@eslint/js": "^9.39.2",
-    "@nciocpl/eslint-config-react": "^1.1.0-alpha.1",
-    "@rollup/plugin-commonjs": "^28.0.0",
-    "@rollup/plugin-node-resolve": "^16.0.0",
-    "@rollup/plugin-typescript": "^12.1.0",
-    "@storybook/addon-a11y": "^8.4.0",
-    "@storybook/addon-essentials": "^8.4.0",
-    "@storybook/react": "^8.4.0",
-    "@storybook/react-vite": "^8.4.0",
-    "@testing-library/jest-dom": "^6.6.0",
-    "@testing-library/react": "^16.1.0",
-    "@types/jest": "^29.5.0",
-    "@types/react": "^18.3.0",
-    "@types/react-dom": "^18.3.0",
-    "@typescript-eslint/eslint-plugin": "^8.54.0",
-    "@typescript-eslint/parser": "^8.54.0",
-    "eslint": "^9.39.2",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-jsx-a11y": "^6.10.2",
-    "eslint-plugin-react": "^7.37.0",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-simple-import-sort": "^12.1.1",
-    "globals": "^17.3.0",
-    "husky": "^9.1.7",
-    "jest": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0",
-    "lint-staged": "^16.2.7",
-    "postcss-modules": "^6.0.0",
-    "prettier": "^3.4.0",
-    "react": "^18.3.0",
-    "react-dom": "^18.3.0",
-    "rollup": "^4.28.0",
-    "rollup-plugin-dts": "^6.1.0",
-    "rollup-plugin-scss": "^4.0.0",
-    "sass": "^1.82.0",
-    "storybook": "^8.4.0",
-    "ts-jest": "^29.2.0",
-    "typescript": "^5.7.0",
-    "typescript-eslint": "^8.54.0"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  }
+	"name": "@nciocpl/react-components",
+	"version": "0.1.0",
+	"description": "Shared React component library for NCI applications",
+	"type": "module",
+	"main": "dist/cjs/index.js",
+	"module": "dist/esm/index.js",
+	"types": "dist/types/index.d.ts",
+	"sideEffects": [
+		"**/*.css",
+		"**/*.scss"
+	],
+	"exports": {
+		".": {
+			"import": "./dist/esm/index.js",
+			"require": "./dist/cjs/index.js",
+			"types": "./dist/types/index.d.ts"
+		},
+		"./core": {
+			"import": "./dist/esm/components/core/index.js",
+			"require": "./dist/cjs/components/core/index.js",
+			"types": "./dist/types/components/core/index.d.ts"
+		},
+		"./ncids": {
+			"import": "./dist/esm/components/ncids/index.js",
+			"require": "./dist/cjs/components/ncids/index.js",
+			"types": "./dist/types/components/ncids/index.d.ts"
+		},
+		"./styles": "./dist/styles/index.css"
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "rollup -c",
+		"dev": "storybook dev -p 6006",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:coverage": "vitest run --coverage",
+		"lint": "eslint 'src/**/*.{ts,tsx}'",
+		"lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix",
+		"format": "prettier --write 'src/**/*.{ts,tsx,scss,css,md}'",
+		"format:check": "prettier --check 'src/**/*.{ts,tsx,scss,css,md}'",
+		"storybook:build": "storybook build",
+		"typecheck": "tsc --noEmit",
+		"prepare": "husky",
+		"prepublishOnly": "pnpm build"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/NCIOCPL/react-app-shared.git"
+	},
+	"keywords": [
+		"react",
+		"components",
+		"nci",
+		"ncids",
+		"design-system"
+	],
+	"author": "NCI OCPL",
+	"license": "Apache-2.0",
+	"bugs": {
+		"url": "https://github.com/NCIOCPL/react-app-shared/issues"
+	},
+	"homepage": "https://github.com/NCIOCPL/react-app-shared#readme",
+	"peerDependencies": {
+		"react": ">=16.14.0",
+		"react-dom": ">=16.14.0"
+	},
+	"peerDependenciesMeta": {
+		"@nciocpl/ncids-css": {
+			"optional": true
+		}
+	},
+	"devDependencies": {
+		"@changesets/cli": "^2.27.0",
+		"@eslint/js": "^9.39.2",
+		"@nciocpl/eslint-config-react": "^1.1.0-alpha.1",
+		"@rollup/plugin-commonjs": "^28.0.0",
+		"@rollup/plugin-node-resolve": "^16.0.0",
+		"@rollup/plugin-typescript": "^12.1.0",
+		"@storybook/addon-a11y": "^8.4.0",
+		"@storybook/addon-essentials": "^8.4.0",
+		"@storybook/react": "^8.4.0",
+		"@storybook/react-vite": "^8.4.0",
+		"@testing-library/jest-dom": "^6.9.0",
+		"@testing-library/react": "^16.1.0",
+		"@testing-library/user-event": "^14.5.0",
+		"@types/react": "^18.3.0",
+		"@types/react-dom": "^18.3.0",
+		"@typescript-eslint/eslint-plugin": "^8.54.0",
+		"@typescript-eslint/parser": "^8.54.0",
+		"eslint": "^9.39.2",
+		"eslint-config-prettier": "^9.1.0",
+		"eslint-plugin-jsx-a11y": "^6.10.2",
+		"eslint-plugin-react": "^7.37.0",
+		"eslint-plugin-react-hooks": "^7.0.1",
+		"eslint-plugin-simple-import-sort": "^12.1.1",
+		"globals": "^17.3.0",
+		"husky": "^9.1.7",
+		"jsdom": "^25.0.0",
+		"lint-staged": "^16.2.7",
+		"postcss-modules": "^6.0.0",
+		"prettier": "^3.4.0",
+		"react": "^18.3.0",
+		"react-dom": "^18.3.0",
+		"rollup": "^4.28.0",
+		"rollup-plugin-dts": "^6.1.0",
+		"rollup-plugin-scss": "^4.0.0",
+		"sass": "^1.82.0",
+		"storybook": "^8.4.0",
+		"@vitest/coverage-v8": "^3.0.0",
+		"typescript": "^5.7.0",
+		"typescript-eslint": "^8.54.0",
+		"vitest": "^3.0.0",
+		"vitest-axe": "^0.1.0"
+	},
+	"engines": {
+		"node": ">=18.0.0"
+	}
 }

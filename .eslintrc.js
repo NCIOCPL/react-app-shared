@@ -1,9 +1,9 @@
+/* global module */
 module.exports = {
 	root: true,
 	env: {
 		browser: true,
 		es2021: true,
-		jest: true,
 	},
 	parser: '@typescript-eslint/parser',
 	parserOptions: {
@@ -30,10 +30,7 @@ module.exports = {
 		'react/react-in-jsx-scope': 'off',
 		'react/prop-types': 'off',
 		'@typescript-eslint/explicit-module-boundary-types': 'off',
-		'@typescript-eslint/no-unused-vars': [
-			'error',
-			{ argsIgnorePattern: '^_' },
-		],
+		'@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
 	},
 	ignorePatterns: ['dist', 'node_modules', 'storybook-static', '*.config.*'],
 };

@@ -62,19 +62,47 @@ pnpm typecheck
 
 ### Scripts
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start Storybook dev server on port 6006 |
-| `pnpm test` | Run test suite |
-| `pnpm test:watch` | Run tests in watch mode |
-| `pnpm test:coverage` | Run tests with coverage report |
-| `pnpm build` | Build the library (ESM + CJS + types) |
-| `pnpm lint` | Lint source files |
-| `pnpm lint:fix` | Lint and auto-fix source files |
-| `pnpm format` | Format source files with Prettier |
-| `pnpm format:check` | Check formatting without writing |
-| `pnpm typecheck` | Run TypeScript type checking |
-| `pnpm storybook:build` | Build static Storybook site |
+| Command                | Description                             |
+| ---------------------- | --------------------------------------- |
+| `pnpm dev`             | Start Storybook dev server on port 6006 |
+| `pnpm test`            | Run test suite                          |
+| `pnpm test:watch`      | Run tests in watch mode                 |
+| `pnpm test:coverage`   | Run tests with coverage report          |
+| `pnpm build`           | Build the library (ESM + CJS + types)   |
+| `pnpm lint`            | Lint source files                       |
+| `pnpm lint:fix`        | Lint and auto-fix source files          |
+| `pnpm format`          | Format source files with Prettier       |
+| `pnpm format:check`    | Check formatting without writing        |
+| `pnpm typecheck`       | Run TypeScript type checking            |
+| `pnpm storybook:build` | Build static Storybook site             |
+
+## Testing
+
+Tests use [Vitest](https://vitest.dev/) with [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) and [vitest-axe](https://github.com/chaance/vitest-axe) for accessibility testing.
+
+```bash
+# Run all tests
+pnpm test
+
+# Run tests in watch mode (re-runs on file changes)
+pnpm test:watch
+
+# Run tests with coverage report
+pnpm test:coverage
+```
+
+Test files should be colocated with the source they test using the `*.test.ts` or `*.test.tsx` naming convention:
+
+```
+src/
+├── components/
+│   └── core/
+│       └── Spinner/
+│           ├── Spinner.tsx
+│           └── Spinner.test.tsx
+```
+
+Coverage thresholds are set to 80% for branches, functions, lines, and statements. The coverage report is generated using the v8 provider.
 
 ## Project Structure
 

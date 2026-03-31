@@ -3,8 +3,8 @@
 ## Development Setup
 
 1. Clone the repository
-2. Run `npm install`
-3. Run `npm run dev` to start Storybook
+2. Run `pnpm install`
+3. Run `pnpm run dev` to start Storybook
 
 ## Adding a New Component
 
@@ -30,6 +30,6 @@
 
 1. Create a feature branch from `main`
 2. Make your changes following the code standards above
-3. Ensure all checks pass: `npm test`, `npm run lint`, `npm run typecheck`
+3. Ensure all checks pass: `pnpm test`, `pnpm run lint`, `pnpm run typecheck`
 4. Submit a PR using the pull request template
 5. Request review from code owners

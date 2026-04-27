@@ -13,29 +13,55 @@ This library provides a canonical set of reusable React components used across N
 - **Core Components** -- Framework-agnostic components with self-contained styling (Spinner, ErrorBoundary, Autocomplete, etc.)
 - **NCIDS Components** -- Components that integrate with the [NCI Design System](https://designsystem.cancer.gov/) (Button, Accordion, Modal, etc.)
 
+## Requirements
+
+- React `>=17.0.0` and React DOM `>=17.0.0` (the build uses the modern `react/jsx-runtime` transform).
+- `@nciocpl/ncids-css` `>=3.0.0` is required to use any NCIDS component (Pager, Collection, etc.). It is declared as an optional peer so apps that only use core components are not forced to install it.
+
 ## Installation
 
 ```bash
-pnpm add @nciocpl/react-components
+pnpm add @nciocpl/react-components @nciocpl/ncids-css
 ```
 
-For NCIDS-styled components, also install the NCIDS CSS package:
+## Setup
 
-```bash
-pnpm add @nciocpl/ncids-css
+NCIDS components rely on USWDS CSS classes. The library ships a pre-bundled stylesheet that compiles the relevant NCIDS/USWDS modules. Import it once at your app entry:
+
+```ts
+// e.g. src/main.tsx
+import '@nciocpl/react-components/styles';
 ```
+
+The bundled CSS resolves USWDS sprite/font URLs against `/img`. Configure your app to serve `node_modules/@nciocpl/ncids-css/uswds-img` at that path.
+
+**Vite (vite.config.ts):**
+
+```ts
+import { defineConfig } from 'vite';
+import path from 'node:path';
+
+export default defineConfig({
+	publicDir: path.resolve(
+		__dirname,
+		'node_modules/@nciocpl/ncids-css/uswds-img'
+	),
+	// ...or copy the directory to your existing public/ as `public/img`
+});
+```
+
+**Webpack / Create React App:** copy `node_modules/@nciocpl/ncids-css/uswds-img` into your `public/img` folder (e.g. via `copy-webpack-plugin` or a postinstall script).
+
+If your app already compiles NCIDS SCSS for non-React UI, skip the bundled stylesheet — the components render with whatever NCIDS rules you have loaded.
 
 ## Usage
 
 ```tsx
-// Import all components
-import { Spinner, ErrorBoundary } from '@nciocpl/react-components';
+// Import from the package root
+import { Pager, Collection, CollectionItem } from '@nciocpl/react-components';
 
-// Import only core components (smaller bundle)
-import { Spinner } from '@nciocpl/react-components/core';
-
-// Import only NCIDS components
-import { Accordion } from '@nciocpl/react-components/ncids';
+// Or scope imports to a category
+import { Pager } from '@nciocpl/react-components/ncids';
 ```
 
 ## Development

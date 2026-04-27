@@ -1,0 +1,19 @@
+// Bundled NCIDS/USWDS styles for components shipped by this library.
+//
+// Consumers that don't already compile NCIDS SCSS can:
+//   import '@nciocpl/react-components/styles';
+//
+// The bundle assumes the USWDS image sprite is served at /img. Map
+// node_modules/@nciocpl/ncids-css/uswds-img to /img in your app's static
+// asset pipeline (see README "Setup" for the standard recipes).
+
+@use 'uswds-core' with (
+	$theme-image-path: '/img',
+	$theme-show-notifications: false,
+	$theme-show-compile-warnings: false
+);
+
+@forward 'uswds-global';
+@forward 'usa-pagination';
+@forward 'usa-icon';
+@forward 'usa-collection';

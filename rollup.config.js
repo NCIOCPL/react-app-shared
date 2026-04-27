@@ -7,6 +7,12 @@ import postcssModules from 'postcss-modules';
 
 const external = ['react', 'react-dom', 'react/jsx-runtime'];
 
+const entries = {
+	index: 'src/index.ts',
+	'components/core/index': 'src/components/core/index.ts',
+	'components/ncids/index': 'src/components/ncids/index.ts',
+};
+
 function scssModules() {
 	const cssModulesExports = {};
 	return scss({
@@ -27,7 +33,7 @@ function scssModules() {
 export default [
 	// ESM build
 	{
-		input: 'src/index.ts',
+		input: entries,
 		output: {
 			dir: 'dist/esm',
 			format: 'esm',
@@ -42,6 +48,7 @@ export default [
 				tsconfig: './tsconfig.build.json',
 				outDir: 'dist/esm',
 				declaration: false,
+				declarationMap: false,
 				declarationDir: undefined,
 			}),
 			scssModules(),
@@ -50,7 +57,7 @@ export default [
 	},
 	// CJS build
 	{
-		input: 'src/index.ts',
+		input: entries,
 		output: {
 			dir: 'dist/cjs',
 			format: 'cjs',
@@ -65,6 +72,7 @@ export default [
 				tsconfig: './tsconfig.build.json',
 				outDir: 'dist/cjs',
 				declaration: false,
+				declarationMap: false,
 				declarationDir: undefined,
 			}),
 			scssModules(),
@@ -73,7 +81,7 @@ export default [
 	},
 	// Type declarations
 	{
-		input: 'src/index.ts',
+		input: entries,
 		output: {
 			dir: 'dist/types',
 			format: 'esm',
@@ -82,28 +90,5 @@ export default [
 		},
 		plugins: [dts()],
 		external: [/\.scss$/, /\.css$/],
-	},
-	// Standalone CSS bundle
-	{
-		input: 'src/index.ts',
-		output: {
-			dir: 'dist/styles',
-			format: 'esm',
-			assetFileNames: '[name][extname]',
-		},
-		plugins: [
-			resolve(),
-			commonjs(),
-			typescript({
-				tsconfig: './tsconfig.build.json',
-				outDir: 'dist/styles',
-				declaration: false,
-				declarationDir: undefined,
-			}),
-			scss({
-				output: 'dist/styles/index.css',
-			}),
-		],
-		external,
 	},
 ];

@@ -35,7 +35,9 @@
 		"registry": "https://npm.pkg.github.com"
 	},
 	"scripts": {
-		"build": "rollup -c",
+		"build": "pnpm build:js && pnpm build:styles",
+		"build:js": "rollup -c",
+		"build:styles": "sass src/styles/index.scss dist/styles/index.css --load-path=node_modules/@nciocpl/ncids-css/packages --load-path=node_modules/@nciocpl/ncids-css/uswds-packages --no-source-map --style=compressed",
 		"dev": "storybook dev -p 6006",
 		"test": "vitest run",
 		"test:watch": "vitest",
@@ -70,8 +72,9 @@
 	},
 	"homepage": "https://github.com/NCIOCPL/react-app-shared#readme",
 	"peerDependencies": {
-		"react": ">=16.14.0",
-		"react-dom": ">=16.14.0"
+		"@nciocpl/ncids-css": ">=3.0.0",
+		"react": ">=17.0.0",
+		"react-dom": ">=17.0.0"
 	},
 	"peerDependenciesMeta": {
 		"@nciocpl/ncids-css": {

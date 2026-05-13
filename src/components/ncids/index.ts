@@ -7,3 +7,5 @@ export { Dropdown } from './Dropdown';
 export type { DropdownProps } from './Dropdown';
 export { TextInput } from './TextInput';
 export type { TextInputProps, TextInputType } from './TextInput';
+export { Autocomplete } from './Autocomplete';
+export type { AutocompleteProps, AutocompleteOption } from './Autocomplete';

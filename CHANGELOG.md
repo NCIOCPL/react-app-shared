@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.0
+
+### Minor Changes
+
+- [#75](https://github.com/NCIOCPL/react-app-shared/pull/75) [`99b6960`](https://github.com/NCIOCPL/react-app-shared/commit/99b6960322429cf30c18b911bb2ad9b01f23ede3) Thanks [@adriancofie](https://github.com/adriancofie)! - Add `Autocomplete` (NCIDS combobox) component and fix its packaging.
+
+  - **Search-box features:** new `minChars` / `minCharsMessage` props (shows a "enter N or more characters" hint below the threshold), an `onSubmit` callback plus a built-in search button (Enter submits when no option is highlighted; a highlighted option is selected first), `highlightMatch` to bold the matched substring in each option, and a `searchButtonLabel` for localization.
+  - **Styling now ships:** the component previously relied on a CSS-module (`Autocomplete.module.scss`) that the rollup pipeline silently dropped — class names resolved to `undefined` and no CSS was emitted to the bundled stylesheet. Styles are now plain `nci-autocomplete*` classes shipped via `@nciocpl/react-components/styles`.
+
+- [#75](https://github.com/NCIOCPL/react-app-shared/pull/75) [`d00f0dd`](https://github.com/NCIOCPL/react-app-shared/commit/d00f0dd423a3702f68b83e1efc3db71cf03bf6a9) Thanks [@adriancofie](https://github.com/adriancofie)! - Add `TextInput` (NCIDS Text Input) component. Wraps a native `<input>` with USWDS `usa-input` styling and supports text, email, password, tel, url, number, and search input types. Forwards standard input props for use as a controlled or uncontrolled input.
+
 ## 0.2.0
 
 ### Minor Changes

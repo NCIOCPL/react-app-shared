@@ -661,6 +661,205 @@ describe('<Autocomplete />', () => {
 		);
 	});
 
+	// ── Minimum characters ──────────────────────────────────────────────────────
+
+	it('shows the default min-chars message below the threshold', async () => {
+		const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+		render(
+			<Autocomplete
+				id="fruit"
+				label="Fruit"
+				loadOptions={loadFruits}
+				minChars={3}
+			/>
+		);
+
+		await user.type(screen.getByRole('combobox'), 'ap');
+		vi.runAllTimers();
+
+		await waitFor(() =>
+			expect(screen.getByRole('listbox')).toBeInTheDocument()
+		);
+		expect(
+			screen.getByText('Please enter 3 or more characters')
+		).toBeInTheDocument();
+		// loadOptions must not be called below the threshold
+		expect(loadFruits).not.toHaveBeenCalled();
+	});
+
+	it('shows a custom min-chars message', async () => {
+		const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+		render(
+			<Autocomplete
+				id="fruit"
+				label="Fruit"
+				options={fruits}
+				minChars={3}
+				minCharsMessage="Ingrese 3 o más caracteres"
+			/>
+		);
+
+		await user.type(screen.getByRole('combobox'), 'ap');
+		vi.runAllTimers();
+
+		await waitFor(() =>
+			expect(screen.getByText('Ingrese 3 o más caracteres')).toBeInTheDocument()
+		);
+	});
+
+	it('loads options once the min-chars threshold is met', async () => {
+		const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+		render(
+			<Autocomplete
+				id="fruit"
+				label="Fruit"
+				loadOptions={loadFruits}
+				minChars={3}
+			/>
+		);
+
+		await user.type(screen.getByRole('combobox'), 'app');
+		vi.runAllTimers();
+
+		await waitFor(() => expect(loadFruits).toHaveBeenCalledWith('app'));
+		await waitFor(() => expect(screen.getByText('Apple')).toBeInTheDocument());
+	});
+
+	// ── Search submit ────────────────────────────────────────────────────────────
+
+	it('does not render the search button without onSubmit', () => {
+		render(<Autocomplete id="fruit" label="Fruit" options={fruits} />);
+		expect(
+			screen.queryByRole('button', { name: 'Search' })
+		).not.toBeInTheDocument();
+	});
+
+	it('renders the search button when onSubmit is provided', () => {
+		render(
+			<Autocomplete
+				id="fruit"
+				label="Fruit"
+				options={fruits}
+				onSubmit={vi.fn()}
+			/>
+		);
+		expect(screen.getByRole('button', { name: 'Search' })).toBeInTheDocument();
+	});
+
+	it('uses a custom search button label', () => {
+		render(
+			<Autocomplete
+				id="fruit"
+				label="Fruit"
+				options={fruits}
+				onSubmit={vi.fn()}
+				searchButtonLabel="Buscar"
+			/>
+		);
+		expect(screen.getByRole('button', { name: 'Buscar' })).toBeInTheDocument();
+	});
+
+	it('calls onSubmit with the input value when the search button is clicked', async () => {
+		const handleSubmit = vi.fn();
+		const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+		render(
+			<Autocomplete
+				id="fruit"
+				label="Fruit"
+				options={fruits}
+				onSubmit={handleSubmit}
+			/>
+		);
+
+		await user.type(screen.getByRole('combobox'), 'ban');
+		await user.click(screen.getByRole('button', { name: 'Search' }));
+		expect(handleSubmit).toHaveBeenCalledWith('ban');
+	});
+
+	it('calls onSubmit when Enter is pressed with the dropdown closed', async () => {
+		const handleSubmit = vi.fn();
+		const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+		render(
+			<Autocomplete
+				id="fruit"
+				label="Fruit"
+				options={fruits}
+				onSubmit={handleSubmit}
+			/>
+		);
+
+		const input = screen.getByRole('combobox');
+		await user.type(input, 'ban');
+		vi.runAllTimers();
+		await waitFor(() =>
+			expect(screen.getByRole('listbox')).toBeInTheDocument()
+		);
+
+		// Close the dropdown, then submit with Enter.
+		await user.keyboard('{Escape}');
+		await user.keyboard('{Enter}');
+		expect(handleSubmit).toHaveBeenCalledWith('ban');
+	});
+
+	it('selects a highlighted option on Enter without submitting, then submits on next Enter', async () => {
+		window.HTMLElement.prototype.scrollIntoView = function () {};
+		const handleSubmit = vi.fn();
+		const handleChange = vi.fn();
+		const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+		render(
+			<Autocomplete
+				id="fruit"
+				label="Fruit"
+				options={fruits}
+				onSubmit={handleSubmit}
+				onChange={handleChange}
+			/>
+		);
+
+		await user.type(screen.getByRole('combobox'), 'ban');
+		vi.runAllTimers();
+		await waitFor(() =>
+			expect(screen.getByRole('listbox')).toBeInTheDocument()
+		);
+
+		// Highlight + Enter selects (no submit yet)
+		await user.keyboard('{ArrowDown}{Enter}');
+		expect(handleChange).toHaveBeenCalledWith({
+			label: 'Banana',
+			value: 'banana',
+		});
+		expect(handleSubmit).not.toHaveBeenCalled();
+		expect(screen.getByRole('combobox')).toHaveValue('Banana');
+
+		// Second Enter (dropdown closed) submits the selected value
+		await user.keyboard('{Enter}');
+		expect(handleSubmit).toHaveBeenCalledWith('Banana');
+	});
+
+	// ── Match highlighting ───────────────────────────────────────────────────────
+
+	it('bolds the matched substring when highlightMatch is set', async () => {
+		const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+		render(
+			<Autocomplete id="fruit" label="Fruit" options={fruits} highlightMatch />
+		);
+
+		await user.type(screen.getByRole('combobox'), 'ap');
+		vi.runAllTimers();
+		await waitFor(() =>
+			expect(screen.getByRole('listbox')).toBeInTheDocument()
+		);
+
+		const options = screen.getAllByRole('option');
+		const appleOption = options.find(
+			(o) => o.textContent === 'Apple'
+		) as HTMLElement;
+		expect(appleOption).toBeDefined();
+		const strong = appleOption.querySelector('strong');
+		expect(strong).not.toBeNull();
+		expect(strong).toHaveTextContent('Ap');
+	});
+
 	// ── Accessibility ──────────────────────────────────────────────────────────
 
 	it('has no accessibility violations in the default (closed) state', async () => {

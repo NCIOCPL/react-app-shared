@@ -1,7 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import styles from './Autocomplete.module.scss';
-
 export interface AutocompleteProps<T = AutocompleteOption> {
 	/** Input element ID */
 	id: string;
@@ -16,8 +14,24 @@ export interface AutocompleteProps<T = AutocompleteOption> {
 	loadOptions?: (inputValue: string) => Promise<T[]>;
 	/** Debounce delay in milliseconds before calling loadOptions. Defaults to 300. */
 	debounceDelay?: number;
+	/**
+	 * Minimum number of characters required before options are loaded/filtered.
+	 * While the input has between 1 and `minChars - 1` characters, the dropdown
+	 * shows `minCharsMessage` instead. Defaults to 0 (no minimum).
+	 */
+	minChars?: number;
+	/**
+	 * Message shown in the dropdown when the input has fewer than `minChars`
+	 * characters. Defaults to "Please enter {minChars} or more characters".
+	 */
+	minCharsMessage?: string;
 	/** Custom renderer for each option row */
 	renderOption?: (option: T, isHighlighted: boolean) => React.ReactNode;
+	/**
+	 * When true (and no `renderOption` is provided), the portion of each option
+	 * label matching the current input value is wrapped in `<strong>`.
+	 */
+	highlightMatch?: boolean;
 	/** Extract the display label string from an option. Defaults to `option.label`. */
 	getOptionLabel?: (option: T) => string;
 	/** Extract the unique value string from an option. Defaults to `option.value`. */
@@ -30,6 +44,14 @@ export interface AutocompleteProps<T = AutocompleteOption> {
 	loadingMessage?: string;
 	/** Called when the user selects an option or clears the input */
 	onChange?: (value: T | null) => void;
+	/**
+	 * Called when the user submits a search — clicks the search button, or
+	 * presses Enter without a highlighted option. Receives the raw input value.
+	 * Providing this also renders the search (submit) button.
+	 */
+	onSubmit?: (inputValue: string) => void;
+	/** Accessible label for the search/submit button. Defaults to "Search". */
+	searchButtonLabel?: string;
 	/** Controlled currently-selected value */
 	value?: T | null;
 	/** Disable the input */
@@ -48,19 +70,59 @@ export interface AutocompleteOption {
 const defaultGetLabel = (option: AutocompleteOption) => option.label;
 const defaultGetValue = (option: AutocompleteOption) => option.value;
 
+/**
+ * Split `label` into plain text / `<strong>` segments around every
+ * case-insensitive occurrence of `query`.
+ */
+function highlightLabel(label: string, query: string): React.ReactNode {
+	const q = query.trim();
+	if (!q) return label;
+
+	const lowerLabel = label.toLowerCase();
+	const lowerQuery = q.toLowerCase();
+	const segments: React.ReactNode[] = [];
+	let cursor = 0;
+	let matchIndex = lowerLabel.indexOf(lowerQuery);
+	let key = 0;
+
+	while (matchIndex !== -1) {
+		if (matchIndex > cursor) {
+			segments.push(label.slice(cursor, matchIndex));
+		}
+		segments.push(
+			<strong key={key++}>
+				{label.slice(matchIndex, matchIndex + q.length)}
+			</strong>
+		);
+		cursor = matchIndex + q.length;
+		matchIndex = lowerLabel.indexOf(lowerQuery, cursor);
+	}
+
+	if (cursor < label.length) {
+		segments.push(label.slice(cursor));
+	}
+
+	return segments;
+}
+
 export function Autocomplete<T = AutocompleteOption>({
 	id,
 	label,
 	options,
 	loadOptions,
 	debounceDelay = 300,
+	minChars = 0,
+	minCharsMessage,
 	renderOption,
+	highlightMatch = false,
 	getOptionLabel,
 	getOptionValue,
 	placeholder,
 	noOptionsMessage = 'No results found.',
 	loadingMessage = 'Loading…',
 	onChange,
+	onSubmit,
+	searchButtonLabel = 'Search',
 	value,
 	disabled = false,
 	className,
@@ -93,6 +155,18 @@ export function Autocomplete<T = AutocompleteOption>({
 	const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const isMountedRef = useRef(true);
 
+	const resolvedMinCharsMessage =
+		minCharsMessage ?? `Please enter ${minChars} or more characters`;
+
+	// True when the input has some text but fewer than the required minimum.
+	const belowMinChars = useCallback(
+		(query: string) => {
+			const len = query.trim().length;
+			return minChars > 0 && len > 0 && len < minChars;
+		},
+		[minChars]
+	);
+
 	// Sync controlled value changes
 	useEffect(() => {
 		if (value !== undefined) {
@@ -110,6 +184,15 @@ export function Autocomplete<T = AutocompleteOption>({
 
 	const openDropdown = useCallback(
 		async (query: string) => {
+			// Below the minimum character threshold: surface the hint instead of
+			// loading/filtering options.
+			if (belowMinChars(query)) {
+				setIsLoading(false);
+				setFilteredOptions([]);
+				setIsOpen(true);
+				return;
+			}
+
 			if (loadOptions) {
 				setIsLoading(true);
 				setIsOpen(true);
@@ -132,7 +215,7 @@ export function Autocomplete<T = AutocompleteOption>({
 				setIsOpen(true);
 			}
 		},
-		[loadOptions, options, resolveLabel]
+		[belowMinChars, loadOptions, options, resolveLabel]
 	);
 
 	const handleInputChange = useCallback(
@@ -157,11 +240,20 @@ export function Autocomplete<T = AutocompleteOption>({
 				return;
 			}
 
+			// Below the minimum threshold: show the hint immediately (no debounce,
+			// no network request).
+			if (belowMinChars(newValue)) {
+				setIsLoading(false);
+				setFilteredOptions([]);
+				setIsOpen(true);
+				return;
+			}
+
 			debounceTimerRef.current = setTimeout(() => {
 				openDropdown(newValue);
 			}, debounceDelay);
 		},
-		[debounceDelay, onChange, openDropdown, selectedValue]
+		[belowMinChars, debounceDelay, onChange, openDropdown, selectedValue]
 	);
 
 	const selectOption = useCallback(
@@ -186,6 +278,12 @@ export function Autocomplete<T = AutocompleteOption>({
 		inputRef.current?.focus();
 	}, [onChange]);
 
+	const handleSubmit = useCallback(() => {
+		setIsOpen(false);
+		setHighlightedIndex(-1);
+		onSubmit?.(inputValue);
+	}, [inputValue, onSubmit]);
+
 	const handleKeyDown = useCallback(
 		(e: React.KeyboardEvent<HTMLInputElement>) => {
 			if (!isOpen) {
@@ -194,6 +292,9 @@ export function Autocomplete<T = AutocompleteOption>({
 					if (inputValue.trim()) {
 						openDropdown(inputValue);
 					}
+				} else if (e.key === 'Enter') {
+					e.preventDefault();
+					handleSubmit();
 				}
 				return;
 			}
@@ -218,6 +319,9 @@ export function Autocomplete<T = AutocompleteOption>({
 						highlightedIndex < filteredOptions.length
 					) {
 						selectOption(filteredOptions[highlightedIndex]);
+					} else {
+						// No option highlighted — treat Enter as a search submission.
+						handleSubmit();
 					}
 					break;
 				}
@@ -236,6 +340,7 @@ export function Autocomplete<T = AutocompleteOption>({
 		},
 		[
 			filteredOptions,
+			handleSubmit,
 			highlightedIndex,
 			inputValue,
 			isOpen,
@@ -283,51 +388,79 @@ export function Autocomplete<T = AutocompleteOption>({
 	const activeDescendant =
 		isOpen && highlightedIndex >= 0 ? optionId(highlightedIndex) : undefined;
 
-	const wrapperClasses = [styles.autocomplete, className || '']
+	const wrapperClasses = ['nci-autocomplete', className || '']
 		.filter(Boolean)
 		.join(' ');
 
 	const inputClasses = [
 		'usa-input',
-		styles.autocompleteInput,
+		'nci-autocomplete__input',
 		inputClassName || '',
 	]
 		.filter(Boolean)
 		.join(' ');
+
+	const renderOptionLabel = (option: T, isHighlighted: boolean) => {
+		if (renderOption) {
+			return renderOption(option, isHighlighted);
+		}
+		const text = resolveLabel(option);
+		return highlightMatch ? highlightLabel(text, inputValue) : text;
+	};
 
 	return (
 		<div ref={wrapperRef} className={wrapperClasses}>
 			<label id={labelId} className="usa-label" htmlFor={id}>
 				{label}
 			</label>
-			<div className={styles.inputWrapper}>
-				<input
-					ref={inputRef}
-					id={id}
-					type="text"
-					role="combobox"
-					autoComplete="off"
-					aria-autocomplete="list"
-					aria-expanded={isOpen}
-					aria-haspopup="listbox"
-					aria-controls={listboxId}
-					aria-activedescendant={activeDescendant}
-					className={inputClasses}
-					value={inputValue}
-					placeholder={placeholder}
-					disabled={disabled}
-					onChange={handleInputChange}
-					onKeyDown={handleKeyDown}
-				/>
-				{inputValue && !disabled && (
+			<div className="nci-autocomplete__control">
+				<div className="nci-autocomplete__field">
+					<input
+						ref={inputRef}
+						id={id}
+						type="text"
+						role="combobox"
+						autoComplete="off"
+						aria-autocomplete="list"
+						aria-expanded={isOpen}
+						aria-haspopup="listbox"
+						aria-controls={listboxId}
+						aria-activedescendant={activeDescendant}
+						className={inputClasses}
+						value={inputValue}
+						placeholder={placeholder}
+						disabled={disabled}
+						onChange={handleInputChange}
+						onKeyDown={handleKeyDown}
+					/>
+					{inputValue && !disabled && (
+						<button
+							type="button"
+							className="nci-autocomplete__clear"
+							aria-label="Clear"
+							onClick={handleClear}
+							tabIndex={-1}
+						>
+							&times;
+						</button>
+					)}
+				</div>
+				{onSubmit && (
 					<button
 						type="button"
-						className={styles.clearButton}
-						aria-label="Clear"
-						onClick={handleClear}
-						tabIndex={-1}
+						className="nci-autocomplete__submit"
+						aria-label={searchButtonLabel}
+						disabled={disabled}
+						onClick={handleSubmit}
 					>
-						&times;
+						<svg
+							aria-hidden="true"
+							focusable="false"
+							viewBox="0 0 24 24"
+							xmlns="http://www.w3.org/2000/svg"
+						>
+							<path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.49 4.49 0 0 1 9.5 14z" />
+						</svg>
 					</button>
 				)}
 			</div>
@@ -337,16 +470,25 @@ export function Autocomplete<T = AutocompleteOption>({
 				id={listboxId}
 				role="listbox"
 				aria-labelledby={labelId}
-				className={styles.listbox}
+				className="nci-autocomplete__listbox"
 				hidden={!isOpen}
 			>
 				{isOpen &&
-					(isLoading ? (
+					(belowMinChars(inputValue) ? (
 						<li
 							role="option"
 							aria-selected={false}
 							aria-disabled={true}
-							className={styles.statusMessage}
+							className="nci-autocomplete__status"
+						>
+							{resolvedMinCharsMessage}
+						</li>
+					) : isLoading ? (
+						<li
+							role="option"
+							aria-selected={false}
+							aria-disabled={true}
+							className="nci-autocomplete__status"
 						>
 							{loadingMessage}
 						</li>
@@ -355,7 +497,7 @@ export function Autocomplete<T = AutocompleteOption>({
 							role="option"
 							aria-selected={false}
 							aria-disabled={true}
-							className={styles.statusMessage}
+							className="nci-autocomplete__status"
 						>
 							{noOptionsMessage}
 						</li>
@@ -372,8 +514,10 @@ export function Autocomplete<T = AutocompleteOption>({
 									role="option"
 									aria-selected={isSelected}
 									className={[
-										styles.option,
-										isHighlighted ? styles.optionHighlighted : '',
+										'nci-autocomplete__option',
+										isHighlighted
+											? 'nci-autocomplete__option--highlighted'
+											: '',
 									]
 										.filter(Boolean)
 										.join(' ')}
@@ -383,9 +527,7 @@ export function Autocomplete<T = AutocompleteOption>({
 									}}
 									onClick={() => selectOption(option)}
 								>
-									{renderOption
-										? renderOption(option, isHighlighted)
-										: resolveLabel(option)}
+									{renderOptionLabel(option, isHighlighted)}
 								</li>
 							);
 						})

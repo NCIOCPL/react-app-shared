@@ -34,6 +34,12 @@ const meta: Meta<typeof Autocomplete<AutocompleteOption>> = {
 			control: { type: 'number', min: 0, max: 1000, step: 50 },
 			description: 'Debounce delay in milliseconds',
 		},
+		minChars: {
+			control: { type: 'number', min: 0, max: 5, step: 1 },
+			description: 'Minimum characters before options load',
+		},
+		minCharsMessage: { control: 'text' },
+		highlightMatch: { control: 'boolean' },
 		disabled: { control: 'boolean' },
 		noOptionsMessage: { control: 'text' },
 		loadingMessage: { control: 'text' },
@@ -52,6 +58,24 @@ export const Default: Story = {
 		options: fruits,
 		placeholder: 'Type to search…',
 		onChange: fn(),
+	},
+};
+
+/**
+ * Search-box configuration: a search (submit) button, a 3-character minimum,
+ * and bolded matches — mirrors the site banner search behaviour.
+ */
+export const SearchBox: Story = {
+	args: {
+		id: 'fruit-search',
+		label: 'Search',
+		options: fruits,
+		placeholder: 'Search…',
+		minChars: 3,
+		highlightMatch: true,
+		searchButtonLabel: 'Search',
+		onChange: fn(),
+		onSubmit: fn(),
 	},
 };
 
@@ -118,15 +142,13 @@ export const Disabled: Story = {
 };
 
 /** Controlled component — the parent manages the selected value. */
-const ControlledTemplate = (args: React.ComponentProps<typeof Autocomplete<AutocompleteOption>>) => {
+const ControlledTemplate = (
+	args: React.ComponentProps<typeof Autocomplete<AutocompleteOption>>
+) => {
 	const [value, setValue] = useState<AutocompleteOption | null>(null);
 	return (
 		<div>
-			<Autocomplete
-				{...args}
-				value={value}
-				onChange={(opt) => setValue(opt)}
-			/>
+			<Autocomplete {...args} value={value} onChange={(opt) => setValue(opt)} />
 			<p style={{ marginTop: '1rem' }}>
 				Selected:{' '}
 				<strong>{value ? `${value.label} (${value.value})` : 'none'}</strong>

@@ -9,3 +9,5 @@ export { TextInput } from './TextInput';
 export type { TextInputProps, TextInputType } from './TextInput';
 export { Autocomplete } from './Autocomplete';
 export type { AutocompleteProps, AutocompleteOption } from './Autocomplete';
+export { Radio, RadioGroup } from './Radio';
+export type { RadioProps, RadioGroupProps } from './Radio';

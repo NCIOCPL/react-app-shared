@@ -6,6 +6,8 @@ Shared React component library for NCI OCPL applications.
 
 Browse the component library and interactive examples at the [Storybook documentation site](https://nciocpl.github.io/react-app-shared/).
 
+Every pull request also gets its own Storybook preview at `https://nciocpl.github.io/react-app-shared/pr-preview/pr-<number>/`; a link is posted on the PR once it deploys. Previews are removed when the PR is closed, or after 14 days without an update.
+
 ## Overview
 
 This library provides a canonical set of reusable React components used across NCI web applications. Components are organized into two categories:

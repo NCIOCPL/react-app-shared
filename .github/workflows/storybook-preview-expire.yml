@@ -1,0 +1,52 @@
+name: Expire Storybook Previews
+
+# Removes PR previews from gh-pages that have not been updated in
+# MAX_AGE_DAYS days. Pushing to the PR redeploys the preview.
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gh-pages
+  cancel-in-progress: false
+
+env:
+  MAX_AGE_DAYS: 14
+
+jobs:
+  expire:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout gh-pages
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          fetch-depth: 0
+
+      - name: Remove stale previews
+        run: |
+          cutoff=$(date -d "${MAX_AGE_DAYS} days ago" +%s)
+          for dir in pr-preview/pr-*/; do
+            [ -d "$dir" ] || continue
+            last=$(git log -1 --format=%ct -- "$dir")
+            if [ -n "$last" ] && [ "$last" -lt "$cutoff" ]; then
+              git rm -rq "$dir"
+              echo "Expired $dir (last updated $(date -d "@$last" +%F))"
+            fi
+          done
+
+      - name: Commit and push
+        run: |
+          if git diff --cached --quiet; then
+            echo "No stale previews."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "Expire Storybook previews older than ${MAX_AGE_DAYS} days"
+          git push

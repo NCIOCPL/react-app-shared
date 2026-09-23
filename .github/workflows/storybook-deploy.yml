@@ -119,3 +119,17 @@ jobs:
           preview-branch: gh-pages
           umbrella-dir: pr-preview
           qr-code: false
+
+      # Without .nojekyll at the branch root, Pages runs Jekyll and drops
+      # underscore-prefixed files (e.g. assets/_commonjsHelpers-*.js), which
+      # breaks Storybook. The preview action does not add it, so ensure it.
+      - name: Ensure .nojekyll on gh-pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh api "repos/${{ github.repository }}/contents/.nojekyll?ref=gh-pages" --silent 2>/dev/null; then
+            gh api -X PUT "repos/${{ github.repository }}/contents/.nojekyll" \
+              -f branch=gh-pages \
+              -f message='Add .nojekyll so Pages serves underscore-prefixed files' \
+              -f content=''
+          fi

@@ -1,5 +1,10 @@
 # Publishing @nciocpl/react-components
 
+> For the release process the repository actually follows (release PR,
+> Changesets "version packages" PR, automatic publish, and syncing `develop`),
+> see [release.md](release.md). This page covers registry setup and the
+> underlying manual commands.
+
 ## Prerequisites
 
 - GitHub personal access token (classic) with `write:packages` and `read:packages` scopes

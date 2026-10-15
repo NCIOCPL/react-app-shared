@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0
+
+### Minor Changes
+
+- [#84](https://github.com/NCIOCPL/react-app-shared/pull/84) [`fa13673`](https://github.com/NCIOCPL/react-app-shared/commit/fa13673427b3b3fb1217db5156e9e5f82e4f8142) Thanks [@adriancofie](https://github.com/adriancofie)! - Add a `type` prop to `Autocomplete` (`'text'` | `'search'`, default `'text'`). With `type="search"` the input renders as a native search input and the component's clear (×) button is omitted, so the browser's own clear button is used — matching the NCIDS header search box.
+
+- [#84](https://github.com/NCIOCPL/react-app-shared/pull/84) [`94dbd53`](https://github.com/NCIOCPL/react-app-shared/commit/94dbd53adb4d31a7b6e5d257107c07a746102cbd) Thanks [@adriancofie](https://github.com/adriancofie)! - Add `Radio` and `RadioGroup` (NCIDS Radio Buttons) components. `Radio` wraps a native radio `<input>` with USWDS `usa-radio` styling and supports an optional description and tile variant. `RadioGroup` renders an accessible `fieldset`/`legend` wrapper, manages selection state for its child radios (controlled or uncontrolled), and supports hint text, required, disabled, tile, and error states.
+
 ## 0.3.0
 
 ### Minor Changes

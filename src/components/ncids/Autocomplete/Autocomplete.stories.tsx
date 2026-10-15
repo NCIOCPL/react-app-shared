@@ -79,6 +79,18 @@ export const SearchBox: Story = {
 	},
 };
 
+/**
+ * Search box on a native `type="search"` input: the browser's own clear (×)
+ * button replaces the component's, matching the NCIDS header search box.
+ */
+export const NativeSearchInput: Story = {
+	args: {
+		...SearchBox.args,
+		id: 'fruit-native-search',
+		type: 'search',
+	},
+};
+
 /** Asynchronous data loading with a simulated 400 ms network delay. */
 export const AsyncLoadOptions: Story = {
 	args: {

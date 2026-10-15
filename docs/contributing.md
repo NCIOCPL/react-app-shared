@@ -28,8 +28,10 @@
 
 ## Pull Request Process
 
-1. Create a feature branch from `main`
+1. Create a feature branch from `develop`
 2. Make your changes following the code standards above
 3. Ensure all checks pass: `pnpm test`, `pnpm run lint`, `pnpm run typecheck`
 4. Submit a PR using the pull request template
 5. Request review from code owners
+
+Releases are cut from `develop` to `main`; see [release.md](release.md).

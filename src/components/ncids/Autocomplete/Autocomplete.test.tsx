@@ -1,6 +1,7 @@
 import React from 'react';
 import {
 	cleanup,
+	fireEvent,
 	render,
 	screen,
 	waitFor,
@@ -349,6 +350,56 @@ describe('<Autocomplete />', () => {
 
 		await user.click(screen.getByRole('button', { name: 'Clear' }));
 		expect(screen.getByRole('combobox')).toHaveValue('');
+		expect(handleChange).toHaveBeenLastCalledWith(null);
+		expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+	});
+
+	// ── Native search input ────────────────────────────────────────────────────
+
+	it('renders a text input by default', () => {
+		render(<Autocomplete id="fruit" label="Fruit" options={fruits} />);
+		expect(screen.getByRole('combobox')).toHaveAttribute('type', 'text');
+	});
+
+	it('renders a search input without the custom clear button when type="search"', async () => {
+		const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+		render(
+			<Autocomplete id="fruit" label="Fruit" options={fruits} type="search" />
+		);
+
+		const input = screen.getByRole('combobox');
+		expect(input).toHaveAttribute('type', 'search');
+		await user.type(input, 'a');
+		expect(
+			screen.queryByRole('button', { name: 'Clear' })
+		).not.toBeInTheDocument();
+	});
+
+	it('resets the selection when a type="search" input is cleared natively', async () => {
+		const handleChange = vi.fn();
+		const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+		render(
+			<Autocomplete
+				id="fruit"
+				label="Fruit"
+				options={fruits}
+				type="search"
+				onChange={handleChange}
+			/>
+		);
+
+		const input = screen.getByRole('combobox');
+		await user.type(input, 'Apple');
+		vi.runAllTimers();
+		await waitFor(() =>
+			expect(screen.getByRole('listbox')).toBeInTheDocument()
+		);
+		await user.click(screen.getByText('Apple'));
+		expect(input).toHaveValue('Apple');
+
+		// The browser's native clear button empties the value and fires `input`.
+		fireEvent.change(input, { target: { value: '' } });
+		expect(input).toHaveValue('');
 		expect(handleChange).toHaveBeenLastCalledWith(null);
 		expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
 	});

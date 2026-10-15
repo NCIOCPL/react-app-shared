@@ -56,6 +56,12 @@ export interface AutocompleteProps<T = AutocompleteOption> {
 	value?: T | null;
 	/** Disable the input */
 	disabled?: boolean;
+	/**
+	 * Input type. `'search'` renders a native search input and omits the
+	 * component's clear (×) button so the browser's own clear button is used,
+	 * matching the NCIDS header search box. Defaults to `'text'`.
+	 */
+	type?: 'text' | 'search';
 	/** Additional CSS class on the wrapper element */
 	className?: string;
 	/** Additional CSS class on the text input */
@@ -125,6 +131,7 @@ export function Autocomplete<T = AutocompleteOption>({
 	searchButtonLabel = 'Search',
 	value,
 	disabled = false,
+	type = 'text',
 	className,
 	inputClassName,
 }: AutocompleteProps<T>): React.ReactElement {
@@ -418,7 +425,7 @@ export function Autocomplete<T = AutocompleteOption>({
 					<input
 						ref={inputRef}
 						id={id}
-						type="text"
+						type={type}
 						role="combobox"
 						autoComplete="off"
 						aria-autocomplete="list"
@@ -433,7 +440,7 @@ export function Autocomplete<T = AutocompleteOption>({
 						onChange={handleInputChange}
 						onKeyDown={handleKeyDown}
 					/>
-					{inputValue && !disabled && (
+					{type !== 'search' && inputValue && !disabled && (
 						<button
 							type="button"
 							className="nci-autocomplete__clear"

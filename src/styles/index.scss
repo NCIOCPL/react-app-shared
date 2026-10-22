@@ -1,11 +1,14 @@
-// Bundled NCIDS/USWDS styles for components shipped by this library.
+// Opt-in page-level base styles for standalone apps.
 //
-// Consumers that don't already compile NCIDS SCSS can:
+// Components ship their own styles, scoped to the `.nci-react-app` wrapper and
+// loaded automatically when the component is used (see "Styling rules" in the
+// README), so this bundle holds only the USWDS/NCIDS page-level base styles
+// (typography, body defaults) for apps that are not embedded in an NCIDS page:
+//
 //   import '@nciocpl/react-components/styles';
 //
-// The bundle assumes the USWDS image sprite is served at /img. Map
-// node_modules/@nciocpl/ncids-css/uswds-img to /img in your app's static
-// asset pipeline (see README "Setup" for the standard recipes).
+// Apps embedded in cancer.gov pages should not import it; the host page
+// already provides these styles.
 
 @use 'uswds-core' with (
 	$theme-image-path: '/img',
@@ -14,14 +17,3 @@
 );
 
 @forward 'uswds-global';
-@forward 'usa-pagination';
-@forward 'usa-icon';
-@forward 'usa-collection';
-@forward 'usa-form';
-@forward 'usa-form-group';
-@forward 'usa-error-message';
-@forward 'usa-hint';
-@forward 'usa-radio';
-
-// Library component styles (plain CSS, not USWDS packages).
-@forward 'autocomplete';

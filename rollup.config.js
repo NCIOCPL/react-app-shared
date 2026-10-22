@@ -2,8 +2,9 @@ import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
 import dts from 'rollup-plugin-dts';
-import scss from 'rollup-plugin-scss';
-import postcssModules from 'postcss-modules';
+import path from 'node:path';
+
+import { compileComponentStyle } from './scripts/component-styles.js';
 
 const external = ['react', 'react-dom', 'react/jsx-runtime'];
 
@@ -13,21 +14,32 @@ const entries = {
 	'components/ncids/index': 'src/components/ncids/index.ts',
 };
 
-function scssModules() {
-	const cssModulesExports = {};
-	return scss({
-		processor: () => ({
-			plugins: [
-				postcssModules({
-					generateScopedName: '[name]__[local]___[hash:base64:5]',
-					getJSON(cssFileName, json) {
-						cssModulesExports[cssFileName] = json;
-					},
-				}),
-			],
-		}),
-		output: false,
-	});
+/**
+ * Components import their own stylesheet (`import './Autocomplete.scss'`).
+ * Compile each one to a CSS file next to the component's output module and
+ * keep the import, pointed at the .css, so the consuming app's bundler
+ * includes the styles whenever the component is used.
+ */
+function componentStyles() {
+	const styles = new Map();
+	return {
+		name: 'component-styles',
+		resolveId(source, importer) {
+			if (!importer || !source.endsWith('.scss')) return null;
+			const file = path.resolve(path.dirname(importer), source);
+			styles.set(file, path.relative('src', file).replace(/\.scss$/, '.css'));
+			return { id: source.replace(/\.scss$/, '.css'), external: true };
+		},
+		generateBundle() {
+			for (const [file, fileName] of styles) {
+				this.emitFile({
+					type: 'asset',
+					fileName,
+					source: compileComponentStyle(file),
+				});
+			}
+		},
+	};
 }
 
 export default [
@@ -51,7 +63,7 @@ export default [
 				declarationMap: false,
 				declarationDir: undefined,
 			}),
-			scssModules(),
+			componentStyles(),
 		],
 		external,
 	},
@@ -75,7 +87,7 @@ export default [
 				declarationMap: false,
 				declarationDir: undefined,
 			}),
-			scssModules(),
+			componentStyles(),
 		],
 		external,
 	},

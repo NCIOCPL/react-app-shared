@@ -1,0 +1,11 @@
+// USWDS/NCIDS settings shared by every component stylesheet.
+//
+// Each component stylesheet is compiled on its own, so each one `@use`s this
+// partial first to configure `uswds-core` before loading NCIDS packages.
+// Images resolve to /img here; the build inlines them as data URIs.
+
+@use 'uswds-core' with (
+	$theme-image-path: '/img',
+	$theme-show-notifications: false,
+	$theme-show-compile-warnings: false
+);

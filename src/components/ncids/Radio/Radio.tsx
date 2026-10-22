@@ -2,6 +2,8 @@ import React from 'react';
 
 import { useRadioGroup } from './RadioGroupContext';
 
+import './Radio.scss';
+
 export interface RadioProps
 	extends Omit<
 		React.InputHTMLAttributes<HTMLInputElement>,

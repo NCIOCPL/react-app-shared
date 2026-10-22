@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 
 import { RadioGroupContext } from './RadioGroupContext';
 
+import './Radio.scss';
+
 export interface RadioGroupProps
 	extends Omit<
 		React.FieldsetHTMLAttributes<HTMLFieldSetElement>,

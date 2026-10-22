@@ -1,5 +1,7 @@
 import React from 'react';
 
+import './Dropdown.scss';
+
 export interface DropdownOptionProps {
 	/** Option label */
 	label: string;

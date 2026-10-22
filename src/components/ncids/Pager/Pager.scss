@@ -1,0 +1,10 @@
+// Pager styles: NCIDS `usa-pagination` and `usa-icon`, scoped to the app
+// wrapper. See "Styling rules" in the README.
+
+@use '../../../styles/settings';
+@use 'sass:meta';
+
+:where(.nci-react-app) {
+	@include meta.load-css('usa-icon');
+	@include meta.load-css('usa-pagination');
+}

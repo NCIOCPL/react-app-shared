@@ -1,0 +1,16 @@
+// Radio and RadioGroup styles: the NCIDS form packages they render, scoped to
+// the app wrapper. See "Styling rules" in the README.
+
+@use '../../../styles/settings';
+@use 'sass:meta';
+
+:where(.nci-react-app) {
+	@include meta.load-css('usa-form');
+	@include meta.load-css('usa-form-group');
+	@include meta.load-css('usa-fieldset');
+	@include meta.load-css('usa-legend');
+	@include meta.load-css('usa-hint');
+	@include meta.load-css('usa-error-message');
+	@include meta.load-css('usa-radio');
+	@include meta.load-css('uswds-helpers');
+}

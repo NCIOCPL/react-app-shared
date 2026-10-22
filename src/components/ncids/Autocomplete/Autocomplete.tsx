@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
+import './Autocomplete.scss';
+
 export interface AutocompleteProps<T = AutocompleteOption> {
 	/** Input element ID */
 	id: string;

@@ -1,0 +1,156 @@
+// Autocomplete styles: NCIDS `nci-autocomplete`, `usa-label`, and `usa-input`,
+// scoped to the app wrapper, plus the structural rules this React markup needs
+// on top of NCIDS. See "Styling rules" in the README.
+
+@use '../../../styles/settings';
+@use 'uswds-core' as *;
+@use 'sass:meta';
+
+:where(.nci-react-app) {
+	@include meta.load-css('usa-label');
+	@include meta.load-css('usa-input');
+	@include meta.load-css('nci-autocomplete');
+}
+
+// The NCIDS styles target the vanilla-JS markup. These rules adapt them to
+// this component's markup (a control row with clear and search buttons, a
+// listbox toggled with `hidden`, a visible status row). They use the plain
+// `.nci-react-app` ancestor rather than `:where()` so they win over the
+// host page's unscoped NCIDS `nci-autocomplete` rules regardless of load order.
+.nci-react-app {
+	.nci-autocomplete {
+		display: block; // NCIDS sets flex; the label stacks above the control
+	}
+
+	.nci-autocomplete__control {
+		display: flex;
+		align-items: stretch;
+		margin-top: units(1);
+	}
+
+	.nci-autocomplete__field {
+		position: relative;
+		display: flex;
+		flex: 1 1 auto;
+		align-items: center;
+	}
+
+	.nci-autocomplete__input {
+		max-width: none; // `.usa-input` caps at 30rem; fill up to the buttons
+		margin-top: 0;
+		padding-right: units(4); // room for the clear (×) button
+
+		&[type='search'] {
+			padding-right: units(1); // the browser draws its own clear button
+		}
+	}
+
+	.nci-autocomplete__clear {
+		position: absolute;
+		top: 50%;
+		right: units(1);
+		transform: translateY(-50%);
+		padding: 0 units(0.5);
+		border: 0;
+		background: none;
+		color: color('base');
+		font-size: size('ui', 'lg');
+		line-height: 1;
+		cursor: pointer;
+
+		&:hover {
+			color: color('ink');
+		}
+
+		&:focus {
+			outline: units(0.5) solid color($theme-focus-color);
+			outline-offset: 0;
+		}
+	}
+
+	// Matches the NCIDS header search button.
+	.nci-autocomplete__submit {
+		display: inline-flex;
+		flex: 0 0 auto;
+		align-items: center;
+		justify-content: center;
+		min-width: units(6);
+		margin: 0;
+		padding: 0 units(1.5);
+		border: 0;
+		border-radius: 0 radius('md') radius('md') 0;
+		background-color: color('primary');
+		color: color('white');
+		cursor: pointer;
+
+		&:hover {
+			background-color: color('primary-dark');
+		}
+
+		&:active {
+			background-color: color('primary-darker');
+		}
+
+		&:focus {
+			outline: units(0.5) solid color($theme-focus-color);
+			outline-offset: units(0.5);
+		}
+
+		&:disabled {
+			background-color: color('disabled');
+			color: color('disabled-dark');
+			cursor: not-allowed;
+		}
+
+		svg {
+			width: units(3);
+			height: units(3);
+			fill: currentColor;
+		}
+	}
+
+	// NCIDS shows the listbox only with an `.active` class; this component
+	// toggles the `hidden` attribute instead.
+	.nci-autocomplete__listbox {
+		display: block;
+		right: 0;
+
+		&[hidden] {
+			display: none;
+		}
+	}
+
+	// Align the listbox with the input, not under the search button.
+	.nci-autocomplete__control:has(> .nci-autocomplete__submit)
+		+ .nci-autocomplete__listbox {
+		right: units(6);
+	}
+
+	.nci-autocomplete__option {
+		strong {
+			font-weight: font-weight('bold');
+		}
+	}
+
+	// Same as NCIDS `.nci-autocomplete__option.highlight`.
+	.nci-autocomplete__option--highlighted {
+		background: color('primary');
+		color: color('white');
+	}
+
+	// NCIDS renders the status row screen-reader-only. Here it carries the
+	// visible loading, no-results, and min-characters messages.
+	.nci-autocomplete__status {
+		position: static;
+		width: auto;
+		height: auto;
+		margin: 0;
+		padding: units(1);
+		overflow: visible;
+		clip: auto;
+		white-space: normal;
+		color: color('ink');
+		font-size: size('ui', '2xs');
+		cursor: default;
+	}
+}

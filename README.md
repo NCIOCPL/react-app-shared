@@ -28,33 +28,44 @@ pnpm add @nciocpl/react-components @nciocpl/ncids-css
 
 ## Setup
 
-NCIDS components rely on USWDS CSS classes. The library ships a pre-bundled stylesheet that compiles the relevant NCIDS/USWDS modules. Import it once at your app entry:
+### Wrap your app in `.nci-react-app`
+
+Every component ships its own styles and loads them automatically when you use it; there is no stylesheet to import. Those styles are scoped to a `.nci-react-app` wrapper, so wrap your app's top-level component in it (render it inside your app's root element, never on the host page):
+
+```tsx
+export const App = () => <div className="nci-react-app">{/* your app */}</div>;
+```
+
+Components rendered outside the wrapper are unstyled.
+
+Your bundler must handle `.css` imported from `node_modules` (Vite and Create React App do by default).
+
+### Styling rules
+
+Library CSS only ever affects the library's own markup, and can be inherited from and overridden by the host page and your app:
+
+1. **Namespaced under `.nci-react-app`.** NCIDS package styles are scoped with zero-specificity `:where(.nci-react-app)`; the few structural rules a component adds on top of NCIDS use `.nci-react-app` so they win over a host page's unscoped NCIDS rules regardless of load order.
+2. **Prefixed class selectors only** (`.nci-autocomplete__*`, `.usa-*`). No bare element selectors and nothing global (`html`, `body`, `*`).
+3. **Complete NCIDS styling from NCIDS sources.** Each component's stylesheet is compiled from the NCIDS packages it renders (`sass:meta` `load-css` inside the scope), so components look right on any page and match the host's NCIDS exactly. Images are inlined, so nothing needs to be served.
+4. **Low specificity.** Override any rule from your app without `!important`.
+5. **Nothing page-level.** No `html`/`body`/reset rules and no `@font-face` in component styles. NCIDS uses Open Sans; load it on the page (cancer.gov already does) or components fall back to the system sans-serif.
+
+`src/styles/component-styles.test.ts` enforces these rules for every component stylesheet.
+
+### Optional: page-level base styles
+
+Standalone apps not embedded in an NCIDS page can also import the USWDS/NCIDS page-level base styles (typography and body defaults). Apps on cancer.gov pages should not; the host page provides them.
 
 ```ts
-// e.g. src/main.tsx
 import '@nciocpl/react-components/styles';
 ```
 
-The bundled CSS resolves USWDS sprite/font URLs against `/img`. Configure your app to serve `node_modules/@nciocpl/ncids-css/uswds-img` at that path.
+### Pager icons
 
-**Vite (vite.config.ts):**
+`Pager` references the USWDS icon sprite at `/img/sprite.svg`. Serve `node_modules/@nciocpl/ncids-css/uswds-img` at `/img`:
 
-```ts
-import { defineConfig } from 'vite';
-import path from 'node:path';
-
-export default defineConfig({
-	publicDir: path.resolve(
-		__dirname,
-		'node_modules/@nciocpl/ncids-css/uswds-img'
-	),
-	// ...or copy the directory to your existing public/ as `public/img`
-});
-```
-
-**Webpack / Create React App:** copy `node_modules/@nciocpl/ncids-css/uswds-img` into your `public/img` folder (e.g. via `copy-webpack-plugin` or a postinstall script).
-
-If your app already compiles NCIDS SCSS for non-React UI, skip the bundled stylesheet — the components render with whatever NCIDS rules you have loaded.
+- **Vite:** set `publicDir` to that directory, or copy it to `public/img`.
+- **Webpack / Create React App:** copy it into `public/img` (e.g. via `copy-webpack-plugin` or a postinstall script).
 
 ## Usage
 

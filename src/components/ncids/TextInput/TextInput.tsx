@@ -1,5 +1,7 @@
 import React from 'react';
 
+import './TextInput.scss';
+
 export type TextInputType =
 	| 'text'
 	| 'email'

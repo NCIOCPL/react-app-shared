@@ -1,0 +1,9 @@
+// TextInput styles: NCIDS `usa-input`, scoped to the app wrapper.
+// See "Styling rules" in the README.
+
+@use '../../../styles/settings';
+@use 'sass:meta';
+
+:where(.nci-react-app) {
+	@include meta.load-css('usa-input');
+}

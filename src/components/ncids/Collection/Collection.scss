@@ -1,0 +1,10 @@
+// Collection styles: NCIDS `usa-collection` and `usa-link`, scoped to the app
+// wrapper. See "Styling rules" in the README.
+
+@use '../../../styles/settings';
+@use 'sass:meta';
+
+:where(.nci-react-app) {
+	@include meta.load-css('usa-link');
+	@include meta.load-css('usa-collection');
+}

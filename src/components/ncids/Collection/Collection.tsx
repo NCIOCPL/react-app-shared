@@ -1,5 +1,7 @@
 import React from 'react';
 
+import './Collection.scss';
+
 export interface CollectionItemProps {
 	/** Item heading content. */
 	heading: React.ReactNode;

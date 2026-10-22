@@ -1,5 +1,7 @@
 import React from 'react';
 
+import './Pager.scss';
+
 export interface PageChangeData {
 	page: number;
 	offset: number;

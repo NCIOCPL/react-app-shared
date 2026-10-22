@@ -1,17 +1,3 @@
-@use 'uswds-core' with (
-	$theme-image-path: '@nciocpl/ncids-css/uswds-img',
-	$theme-show-notifications: false,
-	$theme-show-compile-warnings: false
-);
-
-@forward 'uswds-global';
-@forward 'usa-pagination';
-@forward 'usa-icon';
-@forward 'usa-collection';
-@forward 'usa-select';
-@forward 'usa-combo-box';
-@forward 'usa-form';
-@forward 'usa-form-group';
-@forward 'usa-error-message';
-@forward 'usa-hint';
-@forward 'usa-radio';
+// Storybook loads exactly what an app gets: the library's opt-in page-level
+// base styles. Component styles come from the components themselves.
+@forward '../src/styles/index';

@@ -1,1 +1,0 @@
-import{r as o}from"./index-CALWQ3JB.js";import"./_commonjsHelpers-Cpj98o6Y.js";const t={decorators:[r=>o.createElement("div",{className:"nci-react-app"},r())],parameters:{controls:{matchers:{color:/(background|color)$/i,date:/Date$/i}},a11y:{config:{},options:{}}}};export{t as default};

@@ -797,6 +797,43 @@ describe('<Autocomplete />', () => {
 		expect(screen.getByRole('button', { name: 'Search' })).toBeInTheDocument();
 	});
 
+	it('renders the search button as a submit button', () => {
+		render(
+			<Autocomplete
+				id="fruit"
+				label="Fruit"
+				options={fruits}
+				onSubmit={vi.fn()}
+			/>
+		);
+		expect(screen.getByRole('button', { name: 'Search' })).toHaveAttribute(
+			'type',
+			'submit'
+		);
+	});
+
+	it('calls onSubmit once without submitting a surrounding form', async () => {
+		const handleSubmit = vi.fn();
+		const handleFormSubmit = vi.fn((e: React.FormEvent) => e.preventDefault());
+		const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+		render(
+			<form onSubmit={handleFormSubmit}>
+				<Autocomplete
+					id="fruit"
+					label="Fruit"
+					options={fruits}
+					onSubmit={handleSubmit}
+				/>
+			</form>
+		);
+
+		await user.type(screen.getByRole('combobox'), 'ban');
+		await user.click(screen.getByRole('button', { name: 'Search' }));
+		expect(handleSubmit).toHaveBeenCalledTimes(1);
+		expect(handleSubmit).toHaveBeenCalledWith('ban');
+		expect(handleFormSubmit).not.toHaveBeenCalled();
+	});
+
 	it('uses a custom search button label', () => {
 		render(
 			<Autocomplete

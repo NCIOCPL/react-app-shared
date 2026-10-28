@@ -293,6 +293,17 @@ export function Autocomplete<T = AutocompleteOption>({
 		onSubmit?.(inputValue);
 	}, [inputValue, onSubmit]);
 
+	// The search button is type="submit" so a surrounding form has a submit
+	// button (pa11y / WCAG H32). Prevent the native form submission so the
+	// search runs once, through onSubmit, as it does from the Enter key.
+	const handleSubmitClick = useCallback(
+		(e: React.MouseEvent<HTMLButtonElement>) => {
+			e.preventDefault();
+			handleSubmit();
+		},
+		[handleSubmit]
+	);
+
 	const handleKeyDown = useCallback(
 		(e: React.KeyboardEvent<HTMLInputElement>) => {
 			if (!isOpen) {
@@ -456,11 +467,11 @@ export function Autocomplete<T = AutocompleteOption>({
 				</div>
 				{onSubmit && (
 					<button
-						type="button"
+						type="submit"
 						className="nci-autocomplete__submit"
 						aria-label={searchButtonLabel}
 						disabled={disabled}
-						onClick={handleSubmit}
+						onClick={handleSubmitClick}
 					>
 						<svg
 							aria-hidden="true"

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.1
+
+### Patch Changes
+
+- [#94](https://github.com/NCIOCPL/react-app-shared/pull/94) [`7ad996d`](https://github.com/NCIOCPL/react-app-shared/commit/7ad996dcc316625a8e15069ab3ed93da37dc9489) Thanks [@adriancofie](https://github.com/adriancofie)! - The Autocomplete search button is now `type="submit"`, so a form wrapping the Autocomplete has a submit button (fixes the pa11y / WCAG H32 failure). Clicking it still runs the search once through `onSubmit` without natively submitting the surrounding form.
+
 ## 0.5.0
 
 ### Minor Changes
